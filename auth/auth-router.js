@@ -4,7 +4,6 @@ const router = require('express').Router();
 const Users = require('../users/users-model');
 
 router.post('/register', (req, res) => {
-    console.log(req.body)
     let user = req.body;
 
     const hash = bcrypt.hashSync(user.password, 8);
@@ -13,6 +12,8 @@ router.post('/register', (req, res) => {
 
     Users.add(user)
     .then(saved => {
+        req.session.loggedIn = true;
+
         res.status(201).json(saved);
     })
     .catch(error => {
@@ -28,6 +29,9 @@ router.post('/login', (req, res) => {
     .then(user => {
         console.log('login', user)
         if (user && bcrypt.compareSync(password, user.password)) {
+            req.session.loggedIn = true;
+            req.session.username = user.username;
+
             res.status(200).json({ message: `You are logged in ${user.username}!!!` })
         } else {
             res.status(401).json({ message: 'You shall not pass!' })
@@ -36,6 +40,6 @@ router.post('/login', (req, res) => {
     .catch(err => {
         res.status(500).json(err)
     })
-})
+});
 
 module.exports = router;
