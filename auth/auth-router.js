@@ -4,6 +4,7 @@ const router = require('express').Router();
 const Users = require('../users/users-model');
 
 router.post('/register', (req, res) => {
+    console.log(req.body)
     let user = req.body;
 
     const hash = bcrypt.hashSync(user.password, 8);
